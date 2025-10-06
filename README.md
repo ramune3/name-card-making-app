@@ -7,6 +7,6 @@
 
 ここからAccessできます：https://ramune3.github.io/name-card-making-app/name-card-maker.html
 
-本体のコード：bicycle_game_html.html
+本体のコード：name-card-maker.html
 
 ※プログラムはClaude Sonet 4.5による生成です #100日アプリ作成チャレンジ
