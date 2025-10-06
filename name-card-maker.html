@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>名刺作成アプリ</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- アイコン -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- html2canvas -->
+    <script type="module">
+      import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
+      window.html2canvas = html2canvas;
+    </script>
+
+    <style>
+      body {
+        background: linear-gradient(to bottom right, #faf5ff, #eff6ff, #fdf2f8);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen p-6 flex justify-center">
+    <div class="max-w-6xl w-full grid md:grid-cols-2 gap-8">
+      <!-- 左側 -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-xl font-bold mb-4">基本情報</h2>
+          <label class="block mb-2">氏名</label>
+          <input id="name" value="山田 太郎" class="input" />
+          <label class="block mb-2 mt-3">Name (English)</label>
+          <input id="nameEn" value="Taro Yamada" class="input" />
+          <label class="block mb-2 mt-3">役職</label>
+          <input id="title" value="シニアエンジニア" class="input" />
+          <label class="block mb-2 mt-3">会社名</label>
+          <input id="company" value="株式会社テクノロジー" class="input" />
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-xl font-bold mb-4">連絡先情報</h2>
+          <label class="block mb-2">メール</label>
+          <input id="email" value="taro.yamada@example.com" class="input" />
+          <label class="block mb-2 mt-3">電話番号</label>
+          <input id="phone" value="03-1234-5678" class="input" />
+          <label class="block mb-2 mt-3">Webサイト</label>
+          <input id="website" value="www.example.com" class="input" />
+          <label class="block mb-2 mt-3">LinkedIn</label>
+          <input id="linkedin" value="linkedin.com/in/taroyamada" class="input" />
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-xl font-bold mb-4">背景画像</h2>
+          <input type="file" id="bgUpload" accept="image/*" class="mb-3" />
+          <select id="preset" class="w-full border rounded-lg p-2">
+            <option value="https://images.unsplash.com/photo-1557683316-973673baf926?w=800&q=80">
+              抽象グラデーション
+            </option>
+            <option value="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&q=80">
+              グラデーション
+            </option>
+            <option value="https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&q=80">
+              幾何学模様
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 右側 -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <div class="flex justify-between mb-4">
+            <h2 class="text-xl font-bold">プレビュー</h2>
+            <button
+              id="download"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              ダウンロード
+            </button>
+          </div>
+
+          <div class="flex justify-center p-8 bg-gray-50 rounded-xl">
+            <div
+              id="card"
+              class="relative w-full max-w-md aspect-[1.75/1] rounded-2xl shadow-2xl overflow-hidden"
+              style="
+                background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?w=800&q=80');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-black/70 to-transparent"
+              ></div>
+              <div
+                class="relative h-full p-8 flex flex-col justify-between text-left text-white"
+              >
+                <div>
+                  <h3 id="previewName" class="text-3xl font-bold mb-1">
+                    山田 太郎
+                  </h3>
+                  <p id="previewNameEn" class="text-sm opacity-90 mb-1">
+                    Taro Yamada
+                  </p>
+                  <p id="previewTitle" class="text-base font-medium opacity-80">
+                    シニアエンジニア
+                  </p>
+                  <div class="h-1 w-16 bg-white mt-3"></div>
+                </div>
+
+                <div>
+                  <p id="previewCompany" class="text-lg font-semibold mb-3">
+                    株式会社テクノロジー
+                  </p>
+                  <div class="space-y-1 text-sm opacity-90">
+                    <p id="previewEmail">taro.yamada@example.com</p>
+                    <p id="previewPhone">03-1234-5678</p>
+                    <p id="previewWebsite">www.example.com</p>
+                    <p id="previewLinkedin">
+                      linkedin.com/in/taroyamada
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-sm text-blue-800 mt-4 bg-blue-50 p-2 rounded-lg">
+            左側を編集するとリアルタイムで更新されます。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const updatePreview = () => {
+        document.getElementById("previewName").textContent =
+          document.getElementById("name").value;
+        document.getElementById("previewNameEn").textContent =
+          document.getElementById("nameEn").value;
+        document.getElementById("previewTitle").textContent =
+          document.getElementById("title").value;
+        document.getElementById("previewCompany").textContent =
+          document.getElementById("company").value;
+        document.getElementById("previewEmail").textContent =
+          document.getElementById("email").value;
+        document.getElementById("previewPhone").textContent =
+          document.getElementById("phone").value;
+        document.getElementById("previewWebsite").textContent =
+          document.getElementById("website").value;
+        document.getElementById("previewLinkedin").textContent =
+          document.getElementById("linkedin").value;
+      };
+
+      document.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("input", updatePreview);
+      });
+
+      // 背景変更
+      document.getElementById("preset").addEventListener("change", (e) => {
+        document.getElementById(
+          "card"
+        ).style.backgroundImage = `url(${e.target.value})`;
+      });
+
+      // 画像アップロード
+      document.getElementById("bgUpload").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById(
+            "card"
+          ).style.backgroundImage = `url(${event.target.result})`;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // ダウンロード
+      document.getElementById("download").addEventListener("click", async () => {
+        const card = document.getElementById("card");
+        const canvas = await window.html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+        });
+        const link = document.createElement("a");
+        link.download = "business-card.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+
+      updatePreview();
+    </script>
+
+    <style>
+      .input {
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+      }
+      .input:focus {
+        outline: 2px solid #3b82f6;
+      }
+    </style>
+  </body>
+</html>
